@@ -1,0 +1,4 @@
+{
+    "cmake.ignoreCMakeListsMissing": true,
+    "dart.flutterSdkPath": "~/AppData/Local/flutter"
+}

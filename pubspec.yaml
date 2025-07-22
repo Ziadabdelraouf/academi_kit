@@ -48,6 +48,7 @@ dependencies:
   flutter_side_menu: ^0.5.41
   badges: ^3.1.2
   kalender: ^0.10.2
+  percent_indicator: ^4.2.5
 
 dev_dependencies:
   flutter_test:

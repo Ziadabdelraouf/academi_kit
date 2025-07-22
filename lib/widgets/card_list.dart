@@ -1,7 +1,7 @@
 import 'package:academi_kit/data/app_color.dart';
-import 'package:academi_kit/data/database.dart';
-import 'package:academi_kit/models/class.dart';
-import 'package:academi_kit/providers/provider.dart';
+import 'package:academi_kit/providers/assignment_provider.dart';
+import 'package:academi_kit/providers/course_provider.dart';
+import 'package:academi_kit/providers/exam_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -11,13 +11,11 @@ class CardList extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final classesAsync = ref.watch(classNotifierProvider);
-    // Class c1 = Class(code: 'cs103', name: 'Computer Science 103', credits: 3);
-    // ref.read(classNotifierProvider.notifier).addClass(c1);
+
     return classesAsync.when(
       loading: () => const Center(child: CircularProgressIndicator()),
       error: (error, stackTrace) => Center(child: Text('Error: $error')),
       data: (classes) {
-        // 'classes' is List<Class> - use it to build your UI
         return ListView.builder(
           itemCount: classes.length,
           itemBuilder: (context, index) {
@@ -42,16 +40,24 @@ class CardList extends ConsumerWidget {
                             onPressed: () {
                               ref
                                   .read(classNotifierProvider.notifier)
-                                  .deleteClass(classItem.code);
+                                  .deleteClass(classItem.code, context);
+                              ref.invalidate(assignmentProvider);
+                              ref.invalidate(examProvider);
                               Navigator.of(context).pop();
                             },
-                            child: Text('Yes'),
+                            child: Text(
+                              'Yes',
+                              style: TextStyle(color: Colors.red),
+                            ),
                           ),
                           TextButton(
                             onPressed: () {
                               Navigator.of(context).pop();
                             },
-                            child: Text('No'),
+                            child: Text(
+                              'No',
+                              style: TextStyle(color: AppColors.coolBlue),
+                            ),
                           ),
                         ],
                       );
@@ -59,9 +65,20 @@ class CardList extends ConsumerWidget {
                   );
                 },
                 title: Text(classItem.name),
+                leading: CircleAvatar(
+                  backgroundColor: AppColors.coolBlue,
+                  child: Text(
+                    classItem.code.substring(0, 3).toUpperCase(),
+                    style: TextStyle(color: AppColors.offWhite),
+                  ),
+                ),
+                trailing: Text(
+                  '${classItem.credits} credits',
+                  style: TextStyle(color: AppColors.offWhite),
+                ),
                 subtitle: Text(
-                  style: TextStyle(color: Colors.grey),
-                  'Code: ${classItem.code} | Credits: ${classItem.credits}',
+                  'Assignments: ${classItem.assignmentsCount} | Exams: ${classItem.examsCount}',
+                  style: TextStyle(color: AppColors.darkGrey),
                 ),
               ),
             );

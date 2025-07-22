@@ -10,6 +10,25 @@ class Modal extends StatefulWidget {
 }
 
 class _ModalState extends State<Modal> {
+  TextEditingController classCodeController = TextEditingController();
+  TextEditingController classNameController = TextEditingController();
+  String? selectedCredits;
+
+  Future<void> _addClass() async {
+    final classCode = classCodeController.text.trim();
+    final className = classNameController.text.trim();
+    final credits = selectedCredits;
+    if (classCode.isEmpty || className.isEmpty || credits == null) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Please fill all fields')));
+      return;
+    }
+
+    // This could involve saving the class data to a database or state management solution
+    Navigator.of(context).pop(); // Close the modal after adding the class
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -35,6 +54,7 @@ class _ModalState extends State<Modal> {
               SizedBox(
                 width: MediaQuery.of(context).size.width * 0.45,
                 child: TextFormField(
+                  controller: classCodeController,
                   decoration: InputDecoration(
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10),

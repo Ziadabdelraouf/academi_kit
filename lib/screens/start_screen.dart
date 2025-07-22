@@ -1,7 +1,6 @@
 import 'package:academi_kit/data/Calendar.dart';
 import 'package:academi_kit/data/app_color.dart';
 import 'package:academi_kit/screens/main_screen.dart';
-import 'package:academi_kit/widgets/card_list.dart';
 import 'package:academi_kit/widgets/modal.dart';
 import 'package:convex_bottom_bar/convex_bottom_bar.dart';
 import 'package:flutter/material.dart';
@@ -21,7 +20,6 @@ class _StartScreenState extends State<Startscreen> {
   int currentScreen = 0;
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     screens = [MainScreen(), CalendarScreen()];
     currentScreen = 0;

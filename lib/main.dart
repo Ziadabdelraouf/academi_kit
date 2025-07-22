@@ -1,13 +1,9 @@
-import 'package:academi_kit/data/Calendar.dart';
 import 'package:academi_kit/data/app_color.dart';
 import 'package:academi_kit/data/database.dart';
 import 'package:academi_kit/data/remote.dart';
-import 'package:academi_kit/models/class.dart';
-import 'package:academi_kit/providers/provider.dart';
+import 'package:academi_kit/providers/course_provider.dart';
 import 'package:academi_kit/screens/start_screen.dart';
-import 'package:convex_bottom_bar/convex_bottom_bar.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -16,10 +12,10 @@ void main() async {
   await initSupabase();
 
   // Initialize the database
-  final database = await ClassDatabase.init();
+  final database = await CourseDatabase.init();
   runApp(
     ProviderScope(
-      overrides: [classDatabaseProvider.overrideWithValue(database)],
+      overrides: [courseDatabaseProvider.overrideWithValue(database)],
       child: const MyApp(),
     ),
   );

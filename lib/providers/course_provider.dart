@@ -27,12 +27,15 @@ class ClassNotifier extends StateNotifier<AsyncValue<List<Class>>> {
   }
 
   Future<void> addClass(Class class_) async {
+    print('-------------------------------------------');
+    print(class_.toMap());
+    print('-------------------------------------------');
     await _database.insertClass(class_);
     await fetchClasses(); // Refresh state
   }
 
-  Future<void> updateClass(Class class_) async {
-    await _database.updateClass(class_);
+  Future<void> updateClass(Class class_, String oldCode) async {
+    await _database.updateClass(class_, oldCode);
     await fetchClasses(); // Refresh state
   }
 

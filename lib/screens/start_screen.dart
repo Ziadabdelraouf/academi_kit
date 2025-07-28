@@ -87,6 +87,7 @@ class _StartScreenState extends State<Startscreen> {
           });
         },
       ),
+      resizeToAvoidBottomInset: false,
       body: screens[currentScreen],
     );
   }

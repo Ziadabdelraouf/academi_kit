@@ -2,6 +2,7 @@ import 'package:academi_kit/data/app_color.dart';
 import 'package:academi_kit/providers/assignment_provider.dart';
 import 'package:academi_kit/providers/course_provider.dart';
 import 'package:academi_kit/providers/exam_provider.dart';
+import 'package:academi_kit/widgets/modal.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -24,7 +25,6 @@ class CardList extends ConsumerWidget {
               color: AppColors.lightGrey,
               child: ListTile(
                 splashColor: AppColors.coolBlue,
-
                 onLongPress: () {
                   showDialog(
                     barrierDismissible: true,
@@ -36,6 +36,22 @@ class CardList extends ConsumerWidget {
                           'Are you sure you want to delete this class?',
                         ),
                         actions: [
+                          TextButton.icon(
+                            onPressed: () {
+                              showModalBottomSheet(
+                                context: context,
+                                builder: (context) {
+                                  print('Editing class: ${classItem.toMap()}');
+                                  return Modal(reClass: classItem);
+                                },
+                              );
+                            },
+                            label: Text(
+                              'Edit instead',
+                              style: TextStyle(color: AppColors.coolBlue),
+                            ),
+                            icon: Icon(Icons.edit, color: AppColors.coolBlue),
+                          ),
                           TextButton(
                             onPressed: () {
                               ref

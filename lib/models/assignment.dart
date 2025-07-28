@@ -13,7 +13,7 @@ class Assignment {
     required this.title,
     required this.description,
     required this.dueDate,
-    required this.status,
+    this.status = 0,
   });
 
   Map<String, dynamic> toMap() {

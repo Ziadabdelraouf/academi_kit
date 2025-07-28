@@ -71,9 +71,9 @@ class CourseDatabase {
 
   Future<void> _onOpen(Database db) async {
     await db.execute('PRAGMA foreign_keys = ON');
-    await db.execute('drop table if exists classes');
-    await db.execute('drop table if exists assignments');
-    await db.execute('drop table if exists exams');
+    // await db.execute('drop table if exists classes');
+    // await db.execute('drop table if exists assignments');
+    // await db.execute('drop table if exists exams');
     await db.execute('''
       CREATE TABLE IF NOT EXISTS classes(
         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -121,16 +121,19 @@ class CourseDatabase {
 
   Future<void> insertClass(Class class_) async {
     final db = database;
-    await db.insert('classes', class_.toMap());
+    print('-------------------------------------------');
+    print(class_.toMap());
+    print('-------------------------------------------');
+    print(await db.insert('classes', class_.toMap()));
   }
 
-  Future<void> updateClass(Class class_) async {
+  Future<void> updateClass(Class class_, String oldCode) async {
     final db = database;
     await db.update(
       'classes',
       class_.toMap(),
       where: 'code = ?',
-      whereArgs: [class_.code],
+      whereArgs: [oldCode],
     );
   }
 

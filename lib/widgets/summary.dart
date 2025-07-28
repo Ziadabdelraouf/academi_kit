@@ -3,7 +3,6 @@ import 'package:academi_kit/providers/assignment_provider.dart';
 import 'package:academi_kit/providers/exam_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:percent_indicator/percent_indicator.dart';
 
 class AssignSummary extends ConsumerWidget {
@@ -14,7 +13,7 @@ class AssignSummary extends ConsumerWidget {
     final assignmentsAsync = ref.watch(assignmentProvider);
     final examsAsync = ref.watch(examProvider);
     return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      mainAxisAlignment: MainAxisAlignment.spaceAround,
       children: [
         assignmentsAsync.when(
           loading: () => const Center(child: CircularProgressIndicator()),
@@ -30,11 +29,19 @@ class AssignSummary extends ConsumerWidget {
                         ref.watch(upcomingAssignmentsProvider).total,
               center: Text(
                 "${ref.watch(upcomingAssignmentsProvider).completed}/${ref.watch(upcomingAssignmentsProvider).total}",
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20.0),
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 20.0,
+                  color: AppColors.offWhite,
+                ),
               ),
               footer: Text(
                 "Assignments",
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 17.0),
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 17.0,
+                  color: AppColors.offWhite,
+                ),
               ),
               circularStrokeCap: CircularStrokeCap.butt,
               backgroundColor: Colors.grey,
@@ -47,12 +54,33 @@ class AssignSummary extends ConsumerWidget {
           loading: () => const Center(child: CircularProgressIndicator()),
           error: (error, stackTrace) => Center(child: Text('Error: $error')),
           data: (exams) {
-            return Text(
-              'Due exams: ${ref.watch(upcomingExamsProvider).total}',
-              style: GoogleFonts.roboto(
-                fontSize: 24,
-                color: AppColors.offWhite,
+            return CircularPercentIndicator(
+              radius: 50.0,
+              lineWidth: 5.0,
+              animation: true,
+              percent: ref.watch(upcomingExamsProvider).completed == 0
+                  ? 0.0
+                  : ref.watch(upcomingExamsProvider).completed /
+                        ref.watch(upcomingExamsProvider).total,
+              center: Text(
+                "${ref.watch(upcomingExamsProvider).completed}/${ref.watch(upcomingExamsProvider).total}",
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 20.0,
+                  color: AppColors.offWhite,
+                ),
               ),
+              footer: Text(
+                "Exams",
+                style: TextStyle(
+                  fontWeight: FontWeight.normal,
+                  fontSize: 17.0,
+                  color: AppColors.offWhite,
+                ),
+              ),
+              circularStrokeCap: CircularStrokeCap.butt,
+              backgroundColor: Colors.grey,
+              progressColor: Colors.blue,
             );
           },
         ),

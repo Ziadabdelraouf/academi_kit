@@ -1,10 +1,8 @@
 import 'package:academi_kit/data/app_color.dart';
-import 'package:academi_kit/models/assignment.dart';
 import 'package:academi_kit/models/class.dart';
-import 'package:academi_kit/models/exam.dart';
-import 'package:academi_kit/providers/assignment_provider.dart';
 import 'package:academi_kit/providers/course_provider.dart';
-import 'package:academi_kit/providers/exam_provider.dart';
+import 'package:academi_kit/widgets/add_assignment.dart';
+import 'package:academi_kit/widgets/add_quiz.dart';
 import 'package:academi_kit/widgets/card_list.dart';
 import 'package:academi_kit/widgets/summary.dart';
 import 'package:flutter/material.dart';
@@ -13,30 +11,31 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 class MainScreen extends StatelessWidget {
   const MainScreen({super.key});
   void add_assi(BuildContext context) {
-    Assignment assignment = Assignment(
-      title: 'Assignment 1',
-      description: 'Complete the first assignment',
-      dueDate: DateTime.now().add(Duration(days: 3)),
-      classCode: 'cs103',
-      status: 0,
+    showModalBottomSheet(
+      isScrollControlled: true,
+      context: context,
+      builder: (context) {
+        return AddAssignment();
+      },
     );
-    ProviderScope.containerOf(
-      context,
-    ).read(assignmentProvider.notifier).addAssignment(assignment);
   }
 
   Future<void> add_exam(BuildContext context) async {
-    Exam exam = Exam(
-      title: 'Midterm Exam',
-      description: 'Midterm exam for Computer Science 101',
-      examDate: DateTime.now().add(Duration(days: 7)),
-      status: 0,
-      classCode: 'cs103',
-    );
+    showModalBottomSheet(
+      isScrollControlled: true,
 
-    ProviderScope.containerOf(
-      context,
-    ).read(examProvider.notifier).addExam(exam);
+      context: context,
+      builder: (context) {
+        return FocusScope(
+          child: Padding(
+            padding: EdgeInsets.only(
+              bottom: MediaQuery.of(context).viewInsets.bottom,
+            ),
+            child: AddQuiz(),
+          ),
+        );
+      },
+    );
   }
 
   Future<void> add_class(BuildContext context) async {

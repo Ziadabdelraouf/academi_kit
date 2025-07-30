@@ -1,6 +1,8 @@
 import 'package:academi_kit/data/app_color.dart';
 import 'package:academi_kit/models/class.dart';
+import 'package:academi_kit/providers/assignment_provider.dart';
 import 'package:academi_kit/providers/course_provider.dart';
+import 'package:academi_kit/providers/exam_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -80,11 +82,12 @@ class _ModalState extends State<Modal> {
       return;
     }
     formKey.currentState!.save();
-    // This could involve saving the class data to a database or state management solution
     await ProviderScope.containerOf(
       context,
     ).read(classNotifierProvider.notifier).updateClass(c1, oldclassCode);
     ProviderScope.containerOf(context).invalidate(classNotifierProvider);
+    ProviderScope.containerOf(context).invalidate(assignmentProvider);
+    ProviderScope.containerOf(context).invalidate(examProvider);
     if (mounted) Navigator.pop(context);
   }
 

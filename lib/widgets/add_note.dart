@@ -3,7 +3,6 @@ import 'package:academi_kit/models/note.dart';
 import 'package:academi_kit/models/class.dart';
 import 'package:academi_kit/providers/course_provider.dart';
 import 'package:academi_kit/providers/note_provider.dart';
-import 'package:academi_kit/providers/note_repo.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 

@@ -1,5 +1,6 @@
-import 'package:academi_kit/data/Calendar.dart';
 import 'package:academi_kit/data/app_color.dart';
+import 'package:academi_kit/data/dummy.dart';
+import 'package:academi_kit/screens/calendar_screen.dart';
 import 'package:academi_kit/screens/main_screen.dart';
 import 'package:academi_kit/widgets/modal.dart';
 import 'package:convex_bottom_bar/convex_bottom_bar.dart';
@@ -30,6 +31,10 @@ class _StartScreenState extends State<Startscreen> {
     return Scaffold(
       appBar: AppBar(
         actions: [
+          IconButton(
+            onPressed: () => addDummyData(context),
+            icon: Icon(Icons.notifications),
+          ),
           IconButton(
             icon: Icon(Icons.add),
             color: AppColors.offWhite,
@@ -85,6 +90,7 @@ class _StartScreenState extends State<Startscreen> {
           setState(() {
             currentScreen = index;
           });
+          print(currentScreen);
         },
       ),
       resizeToAvoidBottomInset: false,

@@ -187,7 +187,7 @@ class _AddAssignmentState extends ConsumerState<AddAssignment> {
                 ),
                 ElevatedButton.icon(
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.darkGrey,
+                    backgroundColor: AppColors.coolBlue,
                     foregroundColor: AppColors.offWhite,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(30),

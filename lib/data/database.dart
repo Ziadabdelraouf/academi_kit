@@ -129,12 +129,13 @@ class CourseDatabase {
 
   Future<void> updateClass(Class class_, String oldCode) async {
     final db = database;
-    await db.update(
+    var f = await db.update(
       'classes',
       class_.toMap(),
       where: 'code = ?',
       whereArgs: [oldCode],
     );
+    print(f);
   }
 
   Future<void> deleteClass(String code) async {

@@ -2,6 +2,7 @@ import 'package:academi_kit/data/app_color.dart';
 import 'package:academi_kit/providers/assignment_provider.dart';
 import 'package:academi_kit/providers/course_provider.dart';
 import 'package:academi_kit/providers/exam_provider.dart';
+import 'package:academi_kit/screens/course_details.dart';
 import 'package:academi_kit/widgets/modal.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -25,6 +26,11 @@ class CardList extends ConsumerWidget {
               color: AppColors.lightGrey,
               child: ListTile(
                 splashColor: AppColors.coolBlue,
+                onTap: () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(builder: (context) => CourseDetails()),
+                  );
+                },
                 onLongPress: () {
                   showDialog(
                     barrierDismissible: true,

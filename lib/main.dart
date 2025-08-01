@@ -1,5 +1,6 @@
 import 'package:academi_kit/data/app_color.dart';
 import 'package:academi_kit/data/database.dart';
+import 'package:academi_kit/data/notification.dart';
 import 'package:academi_kit/data/remote.dart';
 import 'package:academi_kit/providers/course_provider.dart';
 import 'package:academi_kit/screens/start_screen.dart';
@@ -10,6 +11,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await initSupabase();
+  NotificationService().init();
 
   // Initialize the database
   final database = await CourseDatabase.init();

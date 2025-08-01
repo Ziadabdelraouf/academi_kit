@@ -1,4 +1,5 @@
 import 'package:academi_kit/data/app_color.dart';
+import 'package:academi_kit/data/notification.dart';
 import 'package:academi_kit/models/class.dart';
 import 'package:academi_kit/models/exam.dart';
 import 'package:academi_kit/providers/course_provider.dart';
@@ -7,7 +8,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class AddQuiz extends ConsumerStatefulWidget {
-  const AddQuiz({super.key});
+  const AddQuiz({super.key, this.quiz});
+  final Exam? quiz;
   @override
   ConsumerState<AddQuiz> createState() => _AddQuizState();
 }
@@ -19,6 +21,7 @@ class _AddQuizState extends ConsumerState<AddQuiz> {
   final TextEditingController statusController = TextEditingController();
   final TextEditingController classController = TextEditingController();
   DateTime dueDate = DateTime.now().subtract(const Duration(days: 7));
+  int selectedStatus = 0; // Default to 'Not Started'
   String selectedClassCode = '';
   List<String> statusList = ['Not Started', 'In Progress', 'Completed'];
   List<Class> classes = [];
@@ -26,6 +29,18 @@ class _AddQuizState extends ConsumerState<AddQuiz> {
   void initState() {
     super.initState();
     classes = ref.read(classNotifierProvider).value ?? [];
+    if (widget.quiz != null) {
+      titleController.text = widget.quiz!.title;
+      descriptionController.text = widget.quiz!.description;
+      dueDate = widget.quiz!.examDate;
+      selectedStatus = widget.quiz!.status;
+      selectedClassCode = widget.quiz!.classCode;
+      statusController.text = statusList[selectedStatus];
+      classController.text = classes
+          .where((c) => c.code == selectedClassCode)
+          .map((c) => c.name)
+          .join(', ');
+    }
   }
 
   @override
@@ -41,7 +56,7 @@ class _AddQuizState extends ConsumerState<AddQuiz> {
           mainAxisSize: MainAxisSize.max,
           children: [
             Text(
-              'Add Quiz',
+              widget.quiz != null ? 'Edit Quiz' : 'Add Quiz',
               style: TextStyle(
                 fontSize: 24,
                 fontWeight: FontWeight.bold,
@@ -102,6 +117,7 @@ class _AddQuizState extends ConsumerState<AddQuiz> {
                     ],
                     controller: statusController,
                     onSelected: (value) {
+                      selectedStatus = value ?? 0;
                       statusController.text = statusList[value ?? 0];
                     },
                     inputDecorationTheme: InputDecorationTheme(
@@ -139,7 +155,7 @@ class _AddQuizState extends ConsumerState<AddQuiz> {
               decoration: InputDecoration(
                 labelText: 'Description',
                 labelStyle: TextStyle(color: AppColors.offWhite),
-                border: OutlineInputBorder(),
+                border: InputBorder.none,
               ),
               controller: descriptionController,
               maxLines: 3,
@@ -151,7 +167,7 @@ class _AddQuizState extends ConsumerState<AddQuiz> {
               children: [
                 ElevatedButton.icon(
                   icon: Icon(Icons.add),
-                  label: Text('Add Quiz'),
+                  label: Text(widget.quiz != null ? 'Edit Quiz' : 'Add Quiz'),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.coolBlue,
                     foregroundColor: AppColors.offWhite,
@@ -159,9 +175,41 @@ class _AddQuizState extends ConsumerState<AddQuiz> {
                       borderRadius: BorderRadius.circular(30),
                     ),
                   ),
-                  onPressed: () {
+                  onPressed: () async {
                     if (formKey.currentState?.validate() ?? false) {
                       // TODO add validations
+                    }
+                    // NotificationService().showNotification(
+                    //   0,
+                    //   'Quiz Reminder',
+                    //   'You have a quiz scheduled for ${dueDate.day}/${dueDate.month}/${dueDate.year}',
+                    // );
+                    if (widget.quiz != null) {
+                      print(widget.quiz!.id);
+                      await ref
+                          .read(examProvider.notifier)
+                          .updateExam(
+                            Exam(
+                              classCode: selectedClassCode,
+                              title: titleController.text,
+                              description: descriptionController.text,
+                              examDate: dueDate,
+                              status: selectedStatus,
+                              id: widget.quiz!.id,
+                            ),
+                          );
+                      ref.invalidate(examProvider);
+                      Navigator.pop(context);
+                      NotificationService().scheduleNotification(
+                        id: 0,
+                        title: 'Quiz Reminder',
+                        body:
+                            'You have a quiz scheduled for ${dueDate.day}/${dueDate.month}/${dueDate.year}',
+                        scheduledDate: dueDate.subtract(
+                          const Duration(days: 2),
+                        ),
+                      );
+                      return;
                     }
                     ref
                         .read(examProvider.notifier)
@@ -171,7 +219,7 @@ class _AddQuizState extends ConsumerState<AddQuiz> {
                             title: titleController.text,
                             description: descriptionController.text,
                             examDate: dueDate,
-                            status: 0,
+                            status: selectedStatus,
                           ),
                         );
                     Navigator.pop(context);

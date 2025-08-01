@@ -1,4 +1,5 @@
 import 'package:academi_kit/data/app_color.dart';
+import 'package:academi_kit/data/notification.dart';
 import 'package:academi_kit/models/assignment.dart';
 import 'package:academi_kit/models/class.dart';
 import 'package:academi_kit/providers/assignment_provider.dart';
@@ -6,8 +7,12 @@ import 'package:academi_kit/providers/course_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import 'package:timezone/data/latest_all.dart' as tz;
+import 'package:timezone/timezone.dart' as tz;
+
 class AddAssignment extends ConsumerStatefulWidget {
-  const AddAssignment({super.key});
+  const AddAssignment({super.key, this.assignment});
+  final Assignment? assignment;
   // //final int? id;
   //   final String classCode;
   //   final String title;
@@ -26,15 +31,29 @@ class _AddAssignmentState extends ConsumerState<AddAssignment> {
   final TextEditingController descriptionController = TextEditingController();
   final TextEditingController statusController = TextEditingController();
   final TextEditingController classController = TextEditingController();
+  int selectedStatus = 0; // Default to 'Not Started'
   DateTime dueDate = DateTime.now().subtract(const Duration(days: 7));
   String selectedClassCode = '';
   List<String> statusList = ['Not Started', 'In Progress', 'Completed'];
   List<Class> classes = [];
+
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
     classes = ref.read(classNotifierProvider).value ?? [];
+    if (widget.assignment != null) {
+      titleController.text = widget.assignment!.title;
+      descriptionController.text = widget.assignment!.description;
+      dueDate = widget.assignment!.dueDate;
+      selectedStatus = widget.assignment!.status;
+      selectedClassCode = widget.assignment!.classCode;
+      statusController.text = statusList[selectedStatus];
+      classController.text = classes
+          .where((c) => c.code == selectedClassCode)
+          .map((c) => c.name)
+          .join(', ');
+    }
   }
 
   @override
@@ -50,7 +69,7 @@ class _AddAssignmentState extends ConsumerState<AddAssignment> {
           mainAxisSize: MainAxisSize.max,
           children: [
             Text(
-              'Add Assignment',
+              widget.assignment == null ? 'Add Assignment' : 'Edit Assignment',
               style: TextStyle(
                 fontSize: 24,
                 fontWeight: FontWeight.bold,
@@ -86,8 +105,10 @@ class _AddAssignmentState extends ConsumerState<AddAssignment> {
                       style: TextStyle(color: AppColors.offWhite),
                     ),
                     controller: statusController,
-                    onSelected: (value) =>
-                        statusController.text = statusList[value ?? 0],
+                    onSelected: (value) {
+                      statusController.text = statusList[value ?? 0];
+                      selectedStatus = value ?? 0;
+                    },
                     dropdownMenuEntries: [
                       DropdownMenuEntry(
                         value: 0,
@@ -141,7 +162,7 @@ class _AddAssignmentState extends ConsumerState<AddAssignment> {
               decoration: InputDecoration(
                 labelText: 'Description',
                 labelStyle: TextStyle(color: AppColors.offWhite),
-                border: OutlineInputBorder(),
+                border: InputBorder.none,
               ),
               controller: descriptionController,
               onChanged: (value) => descriptionController.text = value,
@@ -159,7 +180,11 @@ class _AddAssignmentState extends ConsumerState<AddAssignment> {
               children: [
                 ElevatedButton.icon(
                   icon: Icon(Icons.add),
-                  label: Text('Add Assignment'),
+                  label: Text(
+                    widget.assignment == null
+                        ? 'Add Assignment'
+                        : 'Edit Assignment',
+                  ),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.coolBlue,
                     foregroundColor: AppColors.offWhite,
@@ -167,9 +192,36 @@ class _AddAssignmentState extends ConsumerState<AddAssignment> {
                       borderRadius: BorderRadius.circular(30),
                     ),
                   ),
-                  onPressed: () {
+                  onPressed: () async {
                     if (formKey.currentState?.validate() ?? false) {
                       // TODO add validations
+                    }
+                    if (widget.assignment != null) {
+                      print(widget.assignment!.id);
+                      await ref
+                          .read(assignmentProvider.notifier)
+                          .updateAssignment(
+                            Assignment(
+                              classCode: selectedClassCode,
+                              title: titleController.text,
+                              description: descriptionController.text,
+                              dueDate: dueDate,
+                              status: selectedStatus,
+                              id: widget.assignment!.id,
+                            ),
+                          );
+                      ref.invalidate(assignmentProvider);
+                      NotificationService().scheduleNotification(
+                        id: 0,
+                        title: 'Assignment Reminder',
+                        body:
+                            'You have an assignment scheduled for ${dueDate.day}/${dueDate.month}/${dueDate.year}',
+                        scheduledDate: dueDate.subtract(
+                          const Duration(days: 2),
+                        ),
+                      );
+                      Navigator.pop(context);
+                      return;
                     }
                     ref
                         .read(assignmentProvider.notifier)
@@ -179,7 +231,7 @@ class _AddAssignmentState extends ConsumerState<AddAssignment> {
                             title: titleController.text,
                             description: descriptionController.text,
                             dueDate: dueDate,
-                            status: 0,
+                            status: selectedStatus,
                           ),
                         );
                     Navigator.pop(context);

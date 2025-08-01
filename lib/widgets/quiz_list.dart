@@ -1,5 +1,6 @@
 import 'package:academi_kit/data/app_color.dart';
 import 'package:academi_kit/providers/exam_provider.dart';
+import 'package:academi_kit/widgets/add_quiz.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart'; // For date formatting
@@ -18,6 +19,7 @@ class QuizList extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final quizzesAsync = ref.watch(examProvider);
+    final List<Color> colors = [Colors.red, Colors.orange, Colors.green];
 
     return quizzesAsync.when(
       loading: () => const Center(child: CircularProgressIndicator()),
@@ -51,7 +53,12 @@ class QuizList extends ConsumerWidget {
                   ],
                 ),
                 onTap: () {
-                  // Handle assignment tap
+                  showModalBottomSheet(
+                    context: context,
+                    builder: (context) {
+                      return AddQuiz(quiz: quiz);
+                    },
+                  );
                 },
                 trailing: Text(
                   DateFormat('MMM dd, yyyy ').format(quiz.examDate),
@@ -62,7 +69,7 @@ class QuizList extends ConsumerWidget {
                 ),
                 leading: CircleAvatar(
                   radius: 35,
-                  backgroundColor: AppColors.coolBlue,
+                  backgroundColor: colors[quiz.status],
                   child: Text(
                     quiz.classCode.toUpperCase(),
                     style: TextStyle(color: AppColors.offWhite, fontSize: 10),

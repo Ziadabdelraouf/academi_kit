@@ -81,6 +81,25 @@ class CalendarScreen extends StatelessWidget {
                 ],
               ),
             ),
+            SizedBox(height: 40),
+            ElevatedButton.icon(
+              onPressed: () {},
+              icon: Icon(Icons.note_alt, size: 24),
+              style: ButtonStyle(
+                elevation: WidgetStateProperty.all(5),
+                backgroundColor: WidgetStateProperty.all(AppColors.charcoal),
+                shape: WidgetStateProperty.all(
+                  RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                ),
+                fixedSize: WidgetStateProperty.all(
+                  Size(MediaQuery.sizeOf(context).width * 0.9, 70),
+                ),
+                foregroundColor: WidgetStateProperty.all(AppColors.offWhite),
+              ),
+              label: Text('View Notes'),
+            ),
           ],
         );
       },

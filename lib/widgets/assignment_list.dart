@@ -1,11 +1,14 @@
 import 'package:academi_kit/data/app_color.dart';
+import 'package:academi_kit/models/assignment.dart';
 import 'package:academi_kit/providers/assignment_provider.dart';
+import 'package:academi_kit/widgets/add_assignment.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart'; // For date formatting
 
 class AssignmentsList extends ConsumerWidget {
   const AssignmentsList({super.key});
+
   String truncateWithEllipsis(String text) {
     const int maxLength = 20; // Maximum length before truncation
     if (text.length <= maxLength) {
@@ -18,7 +21,7 @@ class AssignmentsList extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final assignmentsAsync = ref.watch(assignmentProvider);
-
+    List<Color> colors = [Colors.red, Colors.orange, Colors.green];
     return assignmentsAsync.when(
       loading: () => const Center(child: CircularProgressIndicator()),
       error: (error, stack) => Center(child: Text('Error: $error')),
@@ -53,7 +56,15 @@ class AssignmentsList extends ConsumerWidget {
                   ],
                 ),
                 onTap: () {
-                  // Handle assignment tap
+                  showModalBottomSheet(
+                    context: context,
+                    builder: (context) {
+                      return AddAssignment(assignment: assignment);
+                    },
+                  );
+                },
+                onLongPress: () {
+                  _deleteAssignment(ref, assignment.id!, context);
                 },
                 trailing: Text(
                   DateFormat('MMM dd, yyyy ').format(assignment.dueDate),
@@ -64,7 +75,7 @@ class AssignmentsList extends ConsumerWidget {
                 ),
                 leading: CircleAvatar(
                   radius: 35,
-                  backgroundColor: AppColors.coolBlue,
+                  backgroundColor: colors[assignment.status].withOpacity(0.7),
                   child: Text(
                     assignment.classCode.toUpperCase(),
                     style: TextStyle(color: AppColors.offWhite, fontSize: 10),

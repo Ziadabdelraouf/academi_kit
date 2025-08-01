@@ -1,4 +1,5 @@
 import 'package:academi_kit/data/app_color.dart';
+import 'package:academi_kit/data/notification.dart';
 import 'package:academi_kit/models/class.dart';
 import 'package:academi_kit/providers/course_provider.dart';
 import 'package:academi_kit/widgets/add_assignment.dart';
@@ -85,7 +86,37 @@ class MainScreen extends StatelessWidget {
                     foregroundColor: WidgetStatePropertyAll(AppColors.offWhite),
                   ),
                   label: Text("Quick note"),
-                  onPressed: () => add_class(context),
+                  onPressed: () {
+                    // NotificationService().showNotification(
+                    //   id: 1,
+                    //   title: 'Quick Note',
+                    //   body: 'This is a quick note reminder.',
+                    // );
+                    NotificationService()
+                        .scheduleNotification(
+                          id: 2,
+                          title: 'Quiz stf',
+                          body: 'You have a quiz scheduled for ',
+                          scheduledDate: DateTime.now().add(
+                            const Duration(seconds: 5),
+                          ),
+                        )
+                        .then((value) {
+                          print('Notification scheduled successfully');
+                        })
+                        .catchError((error) {
+                          print('Error scheduling notification: $error');
+                        });
+                    NotificationService().getPendingNotifications();
+                    // NotificationService().scheduleNotification(
+                    //   id: 3,
+                    //   scheduledDate: DateTime.now().add(
+                    //     const Duration(seconds: 5),
+                    //   ),
+                    //   title: 'dsdsdsd',
+                    //   body: 'ddsdsd',
+                    // );
+                  },
                   icon: Icon(Icons.note_add),
                 ),
                 TextButton.icon(
